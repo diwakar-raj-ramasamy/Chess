@@ -13,10 +13,12 @@ A modern, interactive Chess application built with React, TypeScript, and Vite. 
     -   Move validation and legal move highlighting.
     -   Pawn promotion.
 -   **User Interface**:
-    -   Responsive design.
+    -   **Responsive Header**: Game controls (New Game, Undo, Flip, Mode) and status are located in a responsive header that adapts to screen size (text + icons on desktop, icons-only on mobile).
     -   Smooth animations using `framer-motion`.
-    -   Interactive board with drag-and-drop or click-to-move (depending on implementation).
-    -   Game Over mechanism with sound effects (Victory/Defeat/Draw).
+    -   Interactive board.
+    -   **Enhanced Feedback**: 
+        -   Custom "You Won", "You Lose", or "Draw the Match" announcements in PvC mode.
+        -   High-quality sound effects for moves and game results.
 -   **Persistence**:
     -   Auto-save game state to LocalStorage so you can resume later.
 
@@ -56,8 +58,10 @@ A modern, interactive Chess application built with React, TypeScript, and Vite. 
 ## Usage
 
 -   **Start Game**: The game starts automatically.
--   **Controls**: Use the control panel to Reset the game, Undo moves, or Flip the board.
--   **Settings**: Switch between PvP and PvC modes.
+-   **Header Controls**: 
+    -   **Mode Selection**: Toggle between PvP and PvC.
+    -   **Actions**: Flip Board, Auto-Flip, New Game, Undo, Surrender.
+    -   On mobile, look for the corresponding icons.
 
 ## License
 

@@ -4,7 +4,7 @@ import { useGame } from '../context/GameContext';
 import { RefreshCw } from 'lucide-react';
 
 export const GameOverModal: React.FC = () => {
-    const { isGameOver, resetGame, game } = useGame();
+    const { isGameOver, resetGame, game, mode, orientation } = useGame();
 
     if (!isGameOver) return null;
 
@@ -30,15 +30,29 @@ export const GameOverModal: React.FC = () => {
                 // Simple "Ta-da" or "Game Over" sound
                 const now = ctx.currentTime;
 
-                if (game.isCheckmate() && (game.turn() === 'b' ? 'White' : 'Black') === 'White') { // Assuming player is white in single player or just general win
-                    // Victory sound (Major arpeggio)
+                // Determine if it's a "Happy" sound (Win) or "Sad" sound (Loss/Draw)
+                let isWin = false;
+                if (game.isCheckmate()) {
+                    const winner = game.turn() === 'b' ? 'White' : 'Black';
+                    if (mode === 'PvC') {
+                        // User wins if Winner matches Orientation
+                        const userColor = orientation === 'w' ? 'White' : 'Black';
+                        isWin = winner === userColor;
+                    } else {
+                        // PvP - always celebrate checkmate? Or just for White? Let's keep it happy for checkmate.
+                        isWin = true;
+                    }
+                }
+
+                if (isWin) { // Victory sound (Major arpeggio)
                     osc.type = 'sine';
                     osc.frequency.setValueAtTime(523.25, now); // C5
                     osc.frequency.setValueAtTime(659.25, now + 0.1); // E5
                     osc.frequency.setValueAtTime(783.99, now + 0.2); // G5
                     osc.frequency.setValueAtTime(1046.50, now + 0.3); // C6
 
-                    gain.gain.setValueAtTime(0.1, now);
+                    // INCREASED VOLUME HERE (0.1 -> 0.5)
+                    gain.gain.setValueAtTime(0.5, now);
                     gain.gain.exponentialRampToValueAtTime(0.01, now + 0.8);
 
                     osc.start(now);
@@ -50,7 +64,8 @@ export const GameOverModal: React.FC = () => {
                     osc.frequency.setValueAtTime(392, now + 0.2); // G4
                     osc.frequency.setValueAtTime(349.23, now + 0.4); // F4
 
-                    gain.gain.setValueAtTime(0.1, now);
+                    // INCREASED VOLUME HERE (0.1 -> 0.5)
+                    gain.gain.setValueAtTime(0.5, now);
                     gain.gain.exponentialRampToValueAtTime(0.01, now + 0.8);
 
                     osc.start(now);
@@ -62,17 +77,36 @@ export const GameOverModal: React.FC = () => {
         };
 
         playSound();
-    }, [game]);
+    }, [game, mode, orientation]);
 
     if (game.isCheckmate()) {
-        title = "CHECKMATE";
-        // If it's White's turn and they are in checkmate, Black won.
         const winner = game.turn() === 'w' ? 'Black' : 'White';
-        subtitle = `${winner} Wins!`;
-        winnerColor = winner === 'White' ? '#fff' : '#aaa';
+
+        if (mode === 'PvC') {
+            const userColor = orientation === 'w' ? 'White' : 'Black';
+            if (winner === userColor) {
+                title = "YOU WON!";
+                subtitle = "Checkmate!";
+                winnerColor = '#22c55e'; // Green
+            } else {
+                title = "YOU LOSE";
+                subtitle = "Checkmate!";
+                winnerColor = '#ef4444'; // Red
+            }
+        } else {
+            title = "CHECKMATE";
+            subtitle = `${winner} Wins!`;
+            winnerColor = winner === 'White' ? '#fff' : '#aaa';
+        }
+
     } else if (game.isDraw()) {
-        title = "DRAW";
-        subtitle = "Stalemate / Insufficient Material";
+        if (mode === 'PvC') {
+            title = "DRAW THE MATCH";
+            subtitle = "Stalemate / Insufficient Material";
+        } else {
+            title = "DRAW";
+            subtitle = "Stalemate / Insufficient Material";
+        }
     }
 
     return (
