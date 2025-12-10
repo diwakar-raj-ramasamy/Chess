@@ -1,7 +1,8 @@
 import React from 'react';
 import { GameProvider } from './context/GameContext';
 import { Board } from './components/Board';
-import { Controls } from './components/Controls';
+// import { Controls } from './components/Controls'; // Removed
+import { Header } from './components/Header';
 import './App.css';
 
 import { GameOverModal } from './components/GameOverModal';
@@ -9,11 +10,12 @@ import { GameOverModal } from './components/GameOverModal';
 const AppContent: React.FC = () => {
   return (
     <div className="app-container">
-      <div style={{ position: 'relative' }}>
+      <Header />
+      <div className="game-area">
         <Board />
         <GameOverModal />
       </div>
-      <Controls />
+      {/* <Controls /> Removed */}
     </div>
   );
 };
